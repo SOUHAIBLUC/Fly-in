@@ -1,34 +1,35 @@
-from zone import zone
-from dataclasses import dataclass
-from connection import connection
+from zone import Zone
+from connection import Connection
 
 
-@dataclass
-class drones:
-    nb_drones: int = 0
-    zones: dict[str, zone]
-    Connections: list[connection] = []
-    stat: str = ""
-    end: str = ""
+class DroneMap:
+    def __init__(self):
+        self.nb_drones: int = 0
+        self.zones: dict[str, Zone] = {}
+        self.Connections: list[Connection] = []
+        self.start: str = ""
+        self.end: str = ""
 
-    def add_zone(self):
-        self.zones[zone.name] = zone
+    def add_zone(self, Zone):
+        self.zones[Zone.name] = Zone
 
-    def add_connection(self, conn: connection):
+    def add_connection(self, conn: Connection):
         self.Connections.append(conn)
 
     def get_neighbor(self, zone_name: str) -> list[str]:
         neighbors: list[str] = []
         for conn in self.Connections:
-            if conn.connection(zone_name, conn.zone_b) or conn.connection(
+            if conn.connection_zone(zone_name, conn.zone_b) or \
+                conn.connection_zone(
                 zone_name, conn.zone_a
             ):
                 neighbor = conn.other_end(zone_name)
-            if self.zones[neighbor].zone_type != "blooked":
+            if self.zones[neighbor].zone_type != "blocked":
                 neighbors.append(neighbor)
         return neighbors
 
-    def get_connection(self, a: str, b: str) -> connection:
+    def get_connection(self, a: str, b: str) -> Connection:
         for conn in self.Connections:
-            if conn.connection(a, b):
-                raise ValueError(f"No connection between {a} and {b}")
+            if conn.connection_zone(a, b):
+                return conn
+        raise ValueError(f"No connection between {a} and {b}")

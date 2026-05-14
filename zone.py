@@ -6,7 +6,7 @@ VALID_ZONE_TYPE = {"normal", "blocked", "restricted", "priority"}
 
 
 @dataclass
-class zone:
+class Zone:
     "single zone (node) in the drone network."
 
     name: str
