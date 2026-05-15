@@ -1,6 +1,7 @@
 from drone_map import DroneMap
 import re
 
+ZONE_TYPE = ["mormal", "blocked", "restricted", "priority"]
 
 class Parse:
     def parse(self, filepath: str) -> DroneMap:
@@ -22,3 +23,5 @@ class Parse:
                     k, v = tag.split("=", 1)
                     result[k] = v
         return result
+    
+    def _parse_line(self, drone_map: DroneMap, i: int, line: str):

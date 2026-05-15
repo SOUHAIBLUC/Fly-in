@@ -4,6 +4,8 @@ from dataclasses import dataclass
 
 @dataclass
 class Connection:
+    "class that hold the zones name limit max"
+    "and the current usege"
     zone_a: str
     zone_b: str
     limit_max_drone: int = 1
