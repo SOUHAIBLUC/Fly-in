@@ -139,6 +139,11 @@ class Parse:
             payload = s.split(":", 1)[1].strip()
             conn_line = payload
             conn = self._parse_connection(conn_line, i)
+            # Validate that both endpoints exist as zones
+            if conn.zone_a not in drone_map.zones:
+                raise ValueError(f"Line {i}: unknown zone '{conn.zone_a}' in connection '{line}'")
+            if conn.zone_b not in drone_map.zones:
+                raise ValueError(f"Line {i}: unknown zone '{conn.zone_b}' in connection '{line}'")
             drone_map.add_connection(conn)
             return
 

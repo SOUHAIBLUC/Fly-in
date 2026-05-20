@@ -18,14 +18,23 @@ class DroneMap:
 
     def get_neighbor(self, zone_name: str) -> list[str]:
         neighbors: list[str] = []
+        seen: set[str] = set()
         for conn in self.Connections:
-            if conn.connection_zone(zone_name, conn.zone_b) or \
-                conn.connection_zone(
-                zone_name, conn.zone_a
-            ):
-                neighbor = conn.other_end(zone_name)
-            if self.zones[neighbor].zone_type != "blocked":
+            if conn.zone_a == zone_name:
+                neighbor = conn.zone_b
+            elif conn.zone_b == zone_name:
+                neighbor = conn.zone_a
+            else:
+                continue
+
+            zone = self.zones.get(neighbor)
+            if zone is None:
+                # skip connections to unknown zones
+                continue
+            if zone.zone_type != "blocked" and neighbor not in seen:
                 neighbors.append(neighbor)
+                seen.add(neighbor)
+
         return neighbors
 
     def get_connection(self, a: str, b: str) -> Connection:
