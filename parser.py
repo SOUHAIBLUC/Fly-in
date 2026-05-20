@@ -46,7 +46,7 @@ class Parse:
         except Exception:
             raise ValueError(f"Line {i}: invalid coordinates for hub '{line}'")
 
-        zone_type = meta.get("type") or meta.get("zone_type") or "normal"
+        zone_type = meta.get("zone", "normal")
         if zone_type not in VALID_ZONE_TYPE:
             raise ValueError(f" {zone_type} is invalid zone type ")
 
