@@ -19,9 +19,9 @@ class Zone:
     is_start: bool = False
 
     def movement_cost(self) -> int:
-        if self.name == "restricted":
+        if self.zone_type == "restricted":
             return 2
-        if self.name == "blocked":
+        if self.zone_type == "blocked":
             return 9999
         return 1
 
