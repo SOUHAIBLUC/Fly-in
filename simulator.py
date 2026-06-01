@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import List
 
+from parser import Parse
 from drone_map import DroneMap
 from pathefinder import PathFinder
 
@@ -45,6 +46,11 @@ class Simulator:
         return drones
     
     def _can_move(self, drone: Drone, next_zone: str) -> bool:
+        # start and end zones have unlimited capacity
+        if next_zone == self.drone_map.start or next_zone == self.drone_map.end:
+            connection = self.drone_map.get_connection(drone.position, next_zone)
+            return connection.avilable_connection()
+
         zone = self.drone_map.zones[next_zone]
         if self.zone_occupancy[next_zone] >= zone.max_dron:
             return False
@@ -62,8 +68,8 @@ class Simulator:
         drone.position = next_zone
         drone.path.pop(0)
 
-        if self.drone_map.zones[next_zone].zone_type == "restricted":
-            drone.turns_in_transit = 1
+        zone = self.drone_map.zones[next_zone]
+        drone.turns_in_transit = max(0, zone.movement_cost() - 1)
 
         if next_zone == self.drone_map.end:
             drone.done = True
@@ -71,6 +77,23 @@ class Simulator:
     def _reset_connections(self) -> None:
         for connection in self.drone_map.Connections:
             connection.reset_usage()
+
+    def _colorize(self, move: str, zone_name: str) -> str:
+        zone = self.drone_map.zones.get(zone_name)
+        if zone is None:
+            return move
+
+        colors = {
+            "normal": "\x1b[37m",
+            "restricted": "\x1b[31m",
+            "priority": "\x1b[32m",
+            "blocked": "\x1b[35m",
+        }
+        color = colors.get(zone.zone_type, "\x1b[37m")
+        if zone_name == self.drone_map.end:
+            color = "\x1b[33m"
+        reset = "\x1b[0m"
+        return f"{color}{move}{reset}"
 
     def run(self) -> None:
         drones = self._create_drones()
@@ -87,7 +110,6 @@ class Simulator:
 
                 if drone.turns_in_transit > 0:
                     drone.turns_in_transit -= 1
-                    moves.append(f"Drone {drone.id} waits in {drone.position}")
                     continue
 
                 next_zone = drone.next_zone()
@@ -98,12 +120,10 @@ class Simulator:
                 if self._can_move(drone, next_zone):
                     previous_zone = drone.position
                     self._move_drone(drone, next_zone)
-                    moves.append(
-                        f"Drone {drone.id} moved from {previous_zone} to {next_zone}"
-                    )
+                    moves.append(self._colorize(f"D{drone.id}-{next_zone}", next_zone))
                 else:
-                    moves.append(f"Drone {drone.id} waits in {drone.position}")
+                    continue
 
-            print(f"Turn {turn}: {', '.join(moves)}")
+            print(" ".join(moves))
 
         print("All drones have arrived.")
