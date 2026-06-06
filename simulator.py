@@ -1,13 +1,12 @@
 from __future__ import annotations
 from typing import List
-
-from parser import Parse
 from drone_map import DroneMap
 from pathefinder import PathFinder
 
 
 class Drone:
-    def __init__(self, drone_id: int, start_zone: str, path: List[str]) -> None:
+    def __init__(self, drone_id: int,
+                 start_zone: str, path: List[str]) -> None:
         self.id: int = drone_id
         self.position: str = start_zone
         self.path: List[str] = list(path)
@@ -16,6 +15,7 @@ class Drone:
 
     def next_zone(self) -> str | None:
         return self.path[0] if self.path else None
+
 
 class Simulator:
     def __init__(self, drone_map: DroneMap, pathfinder: PathFinder) -> None:
@@ -29,7 +29,8 @@ class Simulator:
         if not self.drone_map.start or not self.drone_map.end:
             raise ValueError("Map must define both start and end zones")
 
-        full_path = self.pathfinder.find_path(self.drone_map.start, self.drone_map.end)
+        full_path = self.pathfinder.find_path(self.drone_map.start,
+                                              self.drone_map.end)
         if not full_path:
             raise ValueError("No path from start to end")
 
@@ -44,11 +45,13 @@ class Simulator:
 
         self.zone_occupancy[self.drone_map.start] = len(drones)
         return drones
-    
+
     def _can_move(self, drone: Drone, next_zone: str) -> bool:
-        # start and end zones have unlimited capacity
-        if next_zone == self.drone_map.start or next_zone == self.drone_map.end:
-            connection = self.drone_map.get_connection(drone.position, next_zone)
+
+        if next_zone == self.drone_map.start or \
+             next_zone == self.drone_map.end:
+            connection = self.drone_map.get_connection(drone.position,
+                                                       next_zone)
             return connection.avilable_connection()
 
         zone = self.drone_map.zones[next_zone]
@@ -118,9 +121,9 @@ class Simulator:
                     continue
 
                 if self._can_move(drone, next_zone):
-                    previous_zone = drone.position
                     self._move_drone(drone, next_zone)
-                    moves.append(self._colorize(f"D{drone.id}-{next_zone}", next_zone))
+                    moves.append(self._colorize(f"D{drone.id}-{next_zone}",
+                                                next_zone))
                 else:
                     continue
 

@@ -98,7 +98,7 @@ class Parse:
         if limit_meta is None:
             limit_meta = meta.get("limit_max_drone", None)
         if limit_meta is None:
-            limit_meta = meta.get("capacity", 1)
+            limit_meta = meta.get("capacity", "1")
         try:
             limit = int(limit_meta)
         except Exception:
@@ -106,7 +106,7 @@ class Parse:
 
         return Connection(zone_a=a, zone_b=b, limit_max_drone=limit)
 
-    def _parse_line(self, drone_map: DroneMap, i: int, line: str):
+    def _parse_line(self, drone_map: DroneMap, i: int, line: str) -> None:
         s = line.strip()
 
         if s.lower().startswith("nb_drones:"):
@@ -139,11 +139,12 @@ class Parse:
             payload = s.split(":", 1)[1].strip()
             conn_line = payload
             conn = self._parse_connection(conn_line, i)
-            # Validate that both endpoints exist as zones
             if conn.zone_a not in drone_map.zones:
-                raise ValueError(f"Line {i}: unknown zone '{conn.zone_a}' in connection '{line}'")
+                raise ValueError(f"Line {i}: unknown zone '{conn.zone_a}'"
+                                 f" in connection '{line}'")
             if conn.zone_b not in drone_map.zones:
-                raise ValueError(f"Line {i}: unknown zone '{conn.zone_b}' in connection '{line}'")
+                raise ValueError(f"Line {i}: unknown zone '{conn.zone_b}'"
+                                 f"in connection '{line}'")
             drone_map.add_connection(conn)
             return
 

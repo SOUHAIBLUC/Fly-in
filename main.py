@@ -2,7 +2,6 @@ import os
 import sys
 
 from parser import Parse
-from drone_map import DroneMap
 from pathefinder import PathFinder
 from simulator import Simulator
 

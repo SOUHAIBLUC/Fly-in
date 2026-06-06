@@ -3,17 +3,17 @@ from connection import Connection
 
 
 class DroneMap:
-    def __init__(self):
+    def __init__(self) -> None:
         self.nb_drones: int = 0
         self.zones: dict[str, Zone] = {}
         self.Connections: list[Connection] = []
         self.start: str = ""
         self.end: str = ""
 
-    def add_zone(self, Zone):
-        self.zones[Zone.name] = Zone
+    def add_zone(self, zone: Zone) -> None:
+        self.zones[zone.name] = zone
 
-    def add_connection(self, conn: Connection):
+    def add_connection(self, conn: Connection) -> None:
         self.Connections.append(conn)
 
     def get_neighbor(self, zone_name: str) -> list[str]:
@@ -29,7 +29,6 @@ class DroneMap:
 
             zone = self.zones.get(neighbor)
             if zone is None:
-                # skip connections to unknown zones
                 continue
             if zone.zone_type != "blocked" and neighbor not in seen:
                 neighbors.append(neighbor)
