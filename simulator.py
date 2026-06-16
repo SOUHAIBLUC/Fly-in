@@ -23,9 +23,12 @@ class Drone:
 
 
 class Simulator:
-    def __init__(self, drone_map: DroneMap, pathfinder: PathFinder) -> None:
+    def __init__(
+        self, drone_map: DroneMap, pathfinder: PathFinder, capacity_info: bool
+    ) -> None:
         self.drone_map = drone_map
         self.pathfinder = pathfinder
+        self.capacity_info = capacity_info
         self.zone_occupancy: dict[str, int] = {
             zone_name: 0 for zone_name in self.drone_map.zones
         }
@@ -197,5 +200,4 @@ class Simulator:
                 )
 
             print(" ".join(moves))
-
         print("All drones have arrived.")

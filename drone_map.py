@@ -11,6 +11,8 @@ class DroneMap:
         self.end: str = ""
 
     def add_zone(self, zone: Zone) -> None:
+        if zone.name in self.zones:
+            raise ValueError(f"Zone '{zone.name}' is already defined")
         self.zones[zone.name] = zone
 
     def add_connection(self, conn: Connection) -> None:

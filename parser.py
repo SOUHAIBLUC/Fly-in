@@ -13,6 +13,12 @@ class Parse:
                 if not line or line.startswith("#"):
                     continue
                 self._parse_line(drone_map, i, line)
+        if not drone_map.start:
+            raise ValueError("Missing start_hub declaration")
+        if not drone_map.end:
+            raise ValueError("Missing end_hub declaration")
+        if drone_map.nb_drones == 0:
+            raise ValueError("line for nb_drones is missing or its 0 drone")
         return drone_map
 
     def _parse_metadata(self, line: str) -> dict[str, str]:
@@ -53,9 +59,11 @@ class Parse:
         color = meta.get("color") or meta.get("zone_clore") or "None"
 
         try:
-            max_dron = int(meta.get("max_drones", meta.get("max_dron", 1)))
-        except Exception:
-            max_dron = 1
+            max_dron = int(meta.get("max_drones", "1"))
+        except ValueError:
+            raise ValueError(f"Line {i}: max_drones must be a integer")
+        if max_dron < 1:
+            raise ValueError("the max value is invalid")
 
         is_start = False
         is_end = False
@@ -83,7 +91,8 @@ class Parse:
 
         parts = content.split("-", 1)
         if len(parts) != 2:
-            raise ValueError(f"Line {i}: invalid connection format: '{line}'")
+            raise ValueError(f"Line {i}: connection must have two zones"
+                             f" separated by a dash: '{line}'")
 
         a = parts[0].strip()
         b = parts[1].strip()
